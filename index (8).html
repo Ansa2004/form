@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Directory Submission</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #10B981;
+            --background-start: #EEF2FF;
+            --background-end: #F5F3FF;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --border-color: #D1D5DB;
+            --error-color: #EF4444;
+            --white: #FFFFFF;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+            color: var(--text-dark);
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-wrapper {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #6366F1 100%);
+            color: var(--white);
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .form-content {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-label .icon {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+
+        .required {
+            color: var(--error-color);
+            margin-left: 4px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--white);
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .business-details {
+            min-height: 130px;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #6366F1 100%);
+            color: var(--white);
+            border: none;
+            padding: 16px 24px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn .loading {
+            display: none;
+        }
+
+        .submit-btn.loading .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        .submit-btn.loading .text {
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer-note {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #F3F4F6;
+        }
+
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .success-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-content {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            margin: 20px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .success-modal.show .success-content {
+            transform: scale(1);
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--white);
+            font-size: 24px;
+        }
+
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .success-message {
+            color: var(--text-light);
+            margin-bottom: 24px;
+        }
+
+        .close-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #4338CA;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .form-content {
+                padding: 30px 20px;
+            }
+
+            .form-input {
+                padding: 12px 14px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .submit-btn {
+                padding: 14px 20px;
+                font-size: 1rem;
+            }
+
+            .success-content {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-wrapper">
+            <div class="header">
+                <h1> IBNS Digital Directory – Business Profile Questionnaire</h1>
+                <p>Complete your business profile to be featured in our comprehensive digital directory</p>
+            </div>
+
+            <div class="form-content">
+                <form id="directoryForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd"/>
+                            </svg>
+                            Business / Organization Name<span class="required">*</span>
+                        </label>
+                        <input type="text" id="business_name" name="business_name" class="form-input" placeholder="Enter your business name" required>
+                        <div class="error-message" id="business_name_error">This field is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                            </svg>
+                            Owner / Contact Person Name<span class="required">*</span>
+                        </label>
+                        <input type="text" id="contact_person" name="contact_person" class="form-input" placeholder="Full name of the contact person" required>
+                        <div class="error-message" id="contact_person_error">This field is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                            </svg>
+                            Mobile Number (WhatsApp)<span class="required">*</span>
+                        </label>
+                        <input type="tel" id="mobile_whatsapp" name="mobile_whatsapp" class="form-input" placeholder="+91 XXXXX XXXXX" required>
+                        <div class="helper-text">📱 WhatsApp number for customer contact</div>
+                        <div class="error-message" id="mobile_whatsapp_error">Please enter a valid phone number</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                            </svg>
+                            Full Address<span class="required">*</span>
+                        </label>
+                        <textarea id="full_address" name="full_address" class="form-input" placeholder="Complete business address with city and PIN code" required rows="3"></textarea>
+                        <div class="error-message" id="full_address_error">This field is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h2zm4-3a1 1 0 00-1 1v1h2V4a1 1 0 00-1-1zM4 8v6h12V8H4z" clip-rule="evenodd"/>
+                            </svg>
+                            Business Details and Products / Services<span class="required">*</span>
+                        </label>
+                        <textarea id="business_details" name="business_details" class="form-input business-details" placeholder="Describe your business, products, and services in detail" required rows="5"></textarea>
+                        <div class="error-message" id="business_details_error">This field is required</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118C6.004 2.42 4.91 1 4.083 1c-.826 0-1.921 1.42-2.783 3.882C.846 6.07.554 7.546.554 9h1.529zm.055 2H2.611c.089 1.546.383 2.97.837 4.118C4.31 17.58 5.404 19 6.23 19c.826 0 1.921-1.42 2.783-3.882.454-1.148.748-2.572.837-4.118H7.917c-.09 1.546-.383 2.97-.837 4.118C6.638 17.58 5.544 19 4.718 19c-.826 0-1.921-1.42-2.783-3.882C1.481 13.97 1.187 12.546 1.097 11H3.03c.09-1.546.383-2.97.837-4.118C4.31 4.42 5.404 3 6.23 3c.826 0 1.921 1.42 2.783 3.882.454 1.148.748 2.572.837 4.118h1.917c-.089-1.546-.383-2.97-.837-4.118C9.97 4.42 8.876 3 8.05 3c-.826 0-1.921 1.42-2.783 3.882C4.813 8.03 4.519 9.454 4.429 11h1.709c.09 1.546.383 2.97.837 4.118C7.427 17.58 8.521 19 9.347 19c.826 0 1.921-1.42 2.783-3.882.454-1.148.748-2.572.837-4.118h1.946c-.089 1.546-.383 2.97-.837 4.118C13.624 17.58 12.53 19 11.704 19c-.826 0-1.921-1.42-2.783-3.882-.454-1.148-.748-2.572-.837-4.118H6.138c.089-1.546.383-2.97.837-4.118C7.427 4.42 8.521 3 9.347 3c.826 0 1.921 1.42 2.783 3.882.454 1.148.748 2.572.837 4.118h1.917c-.089-1.546-.383-2.97-.837-4.118C13.595 4.42 12.501 3 11.675 3c-.826 0-1.921 1.42-2.783 3.882-.454 1.148-.748 2.572-.837 4.118H6.138z" clip-rule="evenodd"/>
+                            </svg>
+                            Website or Social Media Links
+                        </label>
+                        <input type="text" id="website_social" name="website_social" class="form-input" placeholder="Website URL, Facebook, Instagram, or other social links">
+                        <div class="error-message" id="website_social_error">Please enter a valid URL</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                            </svg>
+                            Google Map Link
+                        </label>
+                        <input type="text" id="google_map" name="google_map" class="form-input" placeholder="Paste your Google Maps location link">
+                        <div class="helper-text">💡 Right-click on your location in Google Maps and copy the link</div>
+                        <div class="error-message" id="google_map_error">Please enter a valid URL</div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="text">Submit to Directory</span>
+                        <span class="loading">⟳</span>
+                    </button>
+                </form>
+
+                <div class="footer-note">
+                    🔒 Your information will be reviewed before publishing
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">✓</div>
+            <h3 class="success-title">Submission Successful!</h3>
+            <p class="success-message">Thank you! Your business has been submitted to our directory. We'll review and publish it soon.</p>
+            <p class="success-message" id="submittedBusinessName"></p>
+            <button class="close-btn" id="closeModal">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Storage for submitted data (using JavaScript array since localStorage is not available)
+        let submittedBusinesses = [];
+
+        // Form elements
+        const form = document.getElementById('directoryForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successModal = document.getElementById('successModal');
+        const closeModal = document.getElementById('closeModal');
+        const submittedBusinessName = document.getElementById('submittedBusinessName');
+
+        // Validation patterns
+        const phonePattern = /^[+]?[0-9\s\-\(\)]{10,}$/;
+        const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9]([a-zA-Z0-9\-])+[a-zA-Z0-9](\.[a-zA-Z]{2,})+/;
+
+        // Form validation
+        function validateField(fieldId, value, pattern = null) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + '_error');
+            
+            // Check if required field is empty
+            if (field.hasAttribute('required') && !value.trim()) {
+                showError(field, errorElement, 'This field is required');
+                return false;
+            }
+            
+            // Check pattern validation
+            if (value.trim() && pattern && !pattern.test(value)) {
+                if (fieldId === 'mobile_whatsapp') {
+                    showError(field, errorElement, 'Please enter a valid phone number');
+                } else {
+                    showError(field, errorElement, 'Please enter a valid URL');
+                }
+                return false;
+            }
+            
+            // Field is valid
+            hideError(field, errorElement);
+            return true;
+        }
+
+        function showError(field, errorElement, message) {
+            field.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.classList.add('show');
+        }
+
+        function hideError(field, errorElement) {
+            field.classList.remove('error');
+            errorElement.classList.remove('show');
+        }
+
+        // Real-time validation
+        const formInputs = document.querySelectorAll('.form-input');
+        formInputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                const fieldId = this.id;
+                const value = this.value;
+                
+                if (fieldId === 'mobile_whatsapp') {
+                    validateField(fieldId, value, phonePattern);
+                } else if (fieldId === 'website_social' || fieldId === 'google_map') {
+                    if (value.trim()) { // Only validate if not empty (optional fields)
+                        validateField(fieldId, value, urlPattern);
+                    } else {
+                        hideError(this, document.getElementById(fieldId + '_error'));
+                    }
+                } else {
+                    validateField(fieldId, value);
+                }
+            });
+
+            // Remove error styling on input
+            input.addEventListener('input', function() {
+                if (this.classList.contains('error')) {
+                    this.classList.remove('error');
+                    const errorElement = document.getElementById(this.id + '_error');
+                    errorElement.classList.remove('show');
+                }
+            });
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(form);
+            const data = {};
+            let isValid = true;
+            
+            // Validate all fields
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+                
+                if (key === 'mobile_whatsapp') {
+                    if (!validateField(key, value, phonePattern)) isValid = false;
+                } else if (key === 'website_social' || key === 'google_map') {
+                    if (value.trim() && !validateField(key, value, urlPattern)) isValid = false;
+                } else {
+                    if (!validateField(key, value)) isValid = false;
+                }
+            }
+            
+            if (!isValid) {
+                // Scroll to first error
+                const firstError = document.querySelector('.form-input.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
+                return;
+            }
+            
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            // Simulate submission delay
+            setTimeout(() => {
+                // Store submission (in memory since localStorage is not available)
+                data.submissionDate = new Date().toISOString();
+                data.id = Date.now();
+                submittedBusinesses.push(data);
+                
+                // Show success modal
+                submittedBusinessName.textContent = `Business Name: ${data.business_name}`;
+                successModal.classList.add('show');
+                
+                // Reset form
+                form.reset();
+                
+                // Reset button state
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                
+                console.log('Submitted businesses:', submittedBusinesses);
+            }, 1500);
+        });
+
+        // Close modal
+        closeModal.addEventListener('click', function() {
+            successModal.classList.remove('show');
+        });
+
+        // Close modal on background click
+        successModal.addEventListener('click', function(e) {
+            if (e.target === successModal) {
+                successModal.classList.remove('show');
+            }
+        });
+
+        // Escape key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && successModal.classList.contains('show')) {
+                successModal.classList.remove('show');
+            }
+        });
+
+        // Phone number formatting
+        document.getElementById('mobile_whatsapp').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0 && !value.startsWith('91')) {
+                if (value.length === 10) {
+                    value = '91' + value;
+                }
+            }
+            if (value.length > 12) {
+                value = value.slice(0, 12);
+            }
+            if (value.length > 2) {
+                value = '+' + value.slice(0, 2) + ' ' + value.slice(2);
+            } else if (value.length > 0) {
+                value = '+' + value;
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
